@@ -7,6 +7,10 @@
 		.row {
 			display: flex;
 			flex-direction: row;
+
+			.col {
+				margin: 0.25em 0.5em;
+			}
 		}
 
 		.point {
@@ -37,5 +41,9 @@
 		&.bad {
 			border: 1px solid red;
 		}
+	}
+
+	.bottom {
+		margin-top: 8em;
 	}
 }

@@ -96,7 +96,7 @@ const Index: NextPage = () => {
 				</div>
 				<div>
 					<div className={styles.row}>
-						<div>
+						<div className={styles.col}>
 							<h4>Plaintext Input:</h4>
 							<div className={styles.point}>
 								(
@@ -116,7 +116,7 @@ const Index: NextPage = () => {
 								)
 							</div>
 						</div>
-						<div>
+						<div className={styles.col}>
 							<h4>Ciphertext Output:</h4>
 							{cipherOut && (
 								<>
@@ -131,7 +131,7 @@ const Index: NextPage = () => {
 						</div>
 					</div>
 					<div className={styles.row}>
-						<div>
+						<div className={styles.col}>
 							<h4>Ciphertext Input:</h4>
 							<div className={styles.point}>
 								(
@@ -168,7 +168,7 @@ const Index: NextPage = () => {
 								)
 							</div>
 						</div>
-						<div>
+						<div className={styles.col}>
 							<h4>Plaintext Output:</h4>
 							{plainOut && (
 								<div className={styles.point}>
@@ -180,7 +180,7 @@ const Index: NextPage = () => {
 				</div>
 			</div>
 			<div className={styles.bottom}>
-				<a href="https://github.com/">Source</a>
+				<a href="https://github.com/JasonXu314/cyber-quest/blob/master/utils/crypto.ts">Source</a>
 			</div>
 		</div>
 	);
