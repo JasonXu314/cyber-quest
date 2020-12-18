@@ -1,0 +1,41 @@
+.main {
+	h4 {
+		margin: 0;
+	}
+
+	.middle {
+		.row {
+			display: flex;
+			flex-direction: row;
+		}
+
+		.point {
+			display: flex;
+			flex-direction: row;
+
+			.coord {
+				width: 3ch;
+				margin: 0.1em 0.2em;
+			}
+		}
+	}
+
+	.top {
+		display: flex;
+		flex-direction: row;
+		padding: 0.25em 0.5em;
+
+		h4 {
+			margin: 0 0.5em;
+		}
+
+		.warning {
+			margin: auto;
+			color: red;
+		}
+
+		&.bad {
+			border: 1px solid red;
+		}
+	}
+}
