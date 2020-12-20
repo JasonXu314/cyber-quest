@@ -22,7 +22,7 @@ export class ECGroup {
 	public generator: Point;
 	public gOrder: number;
 
-	constructor(public p: number, public a: number, public b: number) {
+	constructor(public p: number, public a: number, public b: number, generator?: Point) {
 		const residues = createResidues(p);
 		const ellGroup: Point[] = [];
 
@@ -42,22 +42,27 @@ export class ECGroup {
 
 		const genPoss: [Point, number][] = [];
 
-		for (const point of this.points) {
-			if (this.generates(point)) {
-				const n = this.nOf(point);
-				genPoss.push([point, n]);
+		if (!generator) {
+			for (const point of this.points) {
+				if (this.generates(point)) {
+					const n = this.nOf(point);
+					genPoss.push([point, n]);
+				}
 			}
-		}
 
-		const ordered = genPoss.sort(([, n1], [, n2]) => n2 - n1);
-		if (ordered.filter(([, n]) => isPrime(n)).length === 0) {
-			const [pt, order] = ordered[Math.floor(ordered.length / 2)];
-			this.generator = pt;
-			this.gOrder = order;
+			const ordered = genPoss.sort(([, n1], [, n2]) => n2 - n1);
+			if (ordered.filter(([, n]) => isPrime(n)).length === 0) {
+				const [pt, order] = ordered[Math.floor(ordered.length / 2)];
+				this.generator = pt;
+				this.gOrder = order;
+			} else {
+				const [pt, order] = ordered[0];
+				this.generator = pt;
+				this.gOrder = order;
+			}
 		} else {
-			const [pt, order] = ordered[0];
-			this.generator = pt;
-			this.gOrder = order;
+			this.generator = generator;
+			this.gOrder = this.nOf(generator);
 		}
 	}
 
@@ -144,7 +149,7 @@ function modDivide(a: number, b: number, base: number): number {
 		return NaN;
 	}
 	if (a % b === 0) {
-		return a/b;
+		return a / b;
 	}
 	for (let i = 0; i < base; i++) {
 		if (mod(i * b, base) === a) {

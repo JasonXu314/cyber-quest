@@ -4,6 +4,14 @@ import { useEffect, useMemo, useState } from 'react';
 import styles from '../sass/Index.module.scss';
 import { createResidues, eccAdd, eccMult, ECGroup, FAKE_POINT, isRealPoint, negative, testConstraints } from '../utils/crypto';
 
+const pregenEllGroup = new ECGroup(751, -1, 188, { x: 0, y: 376 });
+const kr = 85;
+const krG = { x: 671, y: 558 };
+const ks = 113;
+const ksG = { x: 34, y: 633 };
+const kskrG = { x: 47, y: 416 };
+const pregenK = pregenEllGroup.gOrder / 2;
+
 const Index: NextPage = () => {
 	const [p, setP] = useState<number>(23);
 	const [a, setA] = useState<number>(1);
@@ -26,11 +34,28 @@ const Index: NextPage = () => {
 		return null;
 	}, [bpk, ellGroup, k, plaintext]);
 	const plainOut = useMemo<Point | null>(() => {
-		if (cipherOut && isRealPoint(ciphertext[0]) && isRealPoint(ciphertext[1]) && ellGroup) {
+		if (isRealPoint(ciphertext[0]) && isRealPoint(ciphertext[1]) && ellGroup) {
 			return eccAdd(ciphertext[1], negative(eccMult(ciphertext[0], bsk!, ellGroup)), ellGroup);
 		}
 		return null;
-	}, [bsk, cipherOut, ciphertext, ellGroup]);
+	}, [bsk, ciphertext, ellGroup]);
+	const [pregenPlaintext, setPregenPlaintext] = useState<Point>({ x: 443, y: 253 });
+	const [pregenCiphertext, setPregenCiphertext] = useState<[Point, Point]>([
+		{ x: 295, y: 110 },
+		{ x: 181, y: 478 }
+	]);
+	const pregenCipherOut = useMemo<[Point, Point] | null>(() => {
+		if (isRealPoint(pregenPlaintext)) {
+			return [eccMult(pregenEllGroup.generator, pregenK, pregenEllGroup), eccAdd(pregenPlaintext, eccMult(krG, pregenK, pregenEllGroup), pregenEllGroup)];
+		}
+		return null;
+	}, [pregenPlaintext]);
+	const pregenPlainOut = useMemo<Point | null>(() => {
+		if (isRealPoint(pregenCiphertext[0]) && isRealPoint(pregenCiphertext[1])) {
+			return eccAdd(pregenCiphertext[1], negative(eccMult(pregenCiphertext[0], kr, pregenEllGroup)), pregenEllGroup);
+		}
+		return null;
+	}, [pregenCiphertext]);
 
 	useEffect(() => {
 		if (ellGroup) {
@@ -176,6 +201,88 @@ const Index: NextPage = () => {
 								</div>
 							)}
 						</div>
+					</div>
+				</div>
+				<div>
+					<h3>Using Pre-Calculated Values:</h3>
+					<div className={styles.row}>
+						<div className={styles.col}>
+							<h4>Plaintext Input:</h4>
+							<div className={styles.point}>
+								(
+								<input
+									type="text"
+									className={styles.coord}
+									value={isNaN(pregenPlaintext.x) ? '' : pregenPlaintext.x}
+									onChange={(evt) => setPregenPlaintext({ ...pregenPlaintext, x: parseInt(evt.target.value) })}
+								/>
+								,{' '}
+								<input
+									type="text"
+									className={styles.coord}
+									value={isNaN(pregenPlaintext.y) ? '' : pregenPlaintext.y}
+									onChange={(evt) => setPregenPlaintext({ ...pregenPlaintext, y: parseInt(evt.target.value) })}
+								/>
+								)
+							</div>
+						</div>
+						<div className={styles.col}>
+							{pregenCipherOut && (
+								<>
+									<div className={styles.point}>
+										({pregenCipherOut[0].x}, {pregenCipherOut[0].y})
+									</div>
+									<div className={styles.point}>
+										({pregenCipherOut[1].x}, {pregenCipherOut[1].y})
+									</div>
+								</>
+							)}
+						</div>
+					</div>
+					<div className={styles.col}>
+						<h4>Ciphertext Input:</h4>
+						<div className={styles.point}>
+							(
+							<input
+								type="text"
+								className={styles.coord}
+								value={isNaN(pregenCiphertext[0].x) ? '' : pregenCiphertext[0].x}
+								onChange={(evt) => setPregenCiphertext([{ ...pregenCiphertext[0], x: parseInt(evt.target.value) }, pregenCiphertext[1]])}
+							/>
+							,{' '}
+							<input
+								type="text"
+								className={styles.coord}
+								value={isNaN(pregenCiphertext[0].y) ? '' : pregenCiphertext[0].y}
+								onChange={(evt) => setPregenCiphertext([{ ...pregenCiphertext[0], y: parseInt(evt.target.value) }, pregenCiphertext[1]])}
+							/>
+							)
+						</div>
+						<div className={styles.point}>
+							(
+							<input
+								type="text"
+								className={styles.coord}
+								value={isNaN(pregenCiphertext[1].x) ? '' : pregenCiphertext[1].x}
+								onChange={(evt) => setPregenCiphertext([pregenCiphertext[0], { ...pregenCiphertext[1], x: parseInt(evt.target.value) }])}
+							/>
+							,{' '}
+							<input
+								type="text"
+								className={styles.coord}
+								value={isNaN(pregenCiphertext[1].y) ? '' : pregenCiphertext[1].y}
+								onChange={(evt) => setPregenCiphertext([pregenCiphertext[0], { ...pregenCiphertext[1], y: parseInt(evt.target.value) }])}
+							/>
+							)
+						</div>
+					</div>
+					<div className={styles.col}>
+						<h4>Plaintext Output:</h4>
+						{pregenPlainOut && (
+							<div className={styles.point}>
+								({pregenPlainOut.x}, {pregenPlainOut.y})
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
