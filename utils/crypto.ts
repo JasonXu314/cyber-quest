@@ -51,14 +51,17 @@ export class ECGroup {
 			}
 
 			const ordered = genPoss.sort(([, n1], [, n2]) => n2 - n1);
-			if (ordered.filter(([, n]) => isPrime(n)).length === 0) {
+			if (ordered.filter(([, n]) => isPrime(n)).length !== 0) {
+				const [pt, order] = ordered.filter(([, n]) => isPrime(n))[0];
+				this.generator = pt;
+				this.gOrder = order;
+			} else if (ordered.length !== 0) {
 				const [pt, order] = ordered[Math.floor(ordered.length / 2)];
 				this.generator = pt;
 				this.gOrder = order;
 			} else {
-				const [pt, order] = ordered[0];
-				this.generator = pt;
-				this.gOrder = order;
+				this.generator = FAKE_POINT;
+				this.gOrder = -1;
 			}
 		} else {
 			this.generator = generator;
